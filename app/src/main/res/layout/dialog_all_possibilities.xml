@@ -1,71 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="16dp"
     android:gravity="center|bottom"
+    android:background="@android:drawable/alert_light_frame"
+    android:theme="@style/dialogTheme"
     android:alpha="225">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="6dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/allPosAttH"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#222"
-            android:text="@string/attack"
-            android:layout_weight="1"
-            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_margin="6dp">
+
+            <TextView
+                android:id="@+id/allPosAttH"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#222"
+                android:text="@string/attack"
+                android:layout_weight="1"
+                android:gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/allPosDefH"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#222"
+                android:text="@string/defense"
+                android:layout_weight="1"
+                android:gravity="center"
+                />
+            <TextView
+                android:id="@+id/allPosStaH"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#222"
+                android:text="@string/stamina_hp"
+                android:layout_weight="1"
+                android:gravity="center"
+                />
+            <TextView
+                android:id="@+id/allPosPercentH"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#222"
+                android:text="@string/iv_perfect"
+                android:layout_weight="1"
+                android:gravity="center"
+                />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/unimportantText"
             />
 
-        <TextView
-            android:id="@+id/allPosDefH"
-            android:layout_width="0dp"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvResults"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#222"
-            android:text="@string/defense"
-            android:layout_weight="1"
-            android:gravity="center"
-            />
-        <TextView
-            android:id="@+id/allPosStaH"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#222"
-            android:text="@string/stamina_hp"
-            android:layout_weight="1"
-            android:gravity="center"
-            />
-        <TextView
-            android:id="@+id/allPosPercentH"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textColor="#222"
-            android:text="@string/iv_perfect"
-            android:layout_weight="1"
-            android:gravity="center"
-            />
+            android:layout_margin="6dp"/>
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/unimportantText"
-        />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvResults"
+    <LinearLayout
+        android:id="@+id/llButtonsOnCheck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="6dp"/>
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnBackInfo"
+            android:text="@string/back"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnCloseInfo"
+            android:text="@string/close"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 </LinearLayout>
