@@ -121,7 +121,11 @@ public class Pokefly extends Service {
 
     private ImageView ivButton;
     private ImageView arcPointer;
-    private LinearLayout infoLayout;
+
+    // Dialog layouts
+    private LinearLayout inputsLayout;
+    private LinearLayout resultsLayout;
+    private LinearLayout allPossibilitiesLayout;
 
     private LinearLayout touchView;
     private WindowManager.LayoutParams touchViewParams;
@@ -164,15 +168,8 @@ public class Pokefly extends Service {
     @BindView(R.id.appraisalPercentageRange)
     Spinner appraisalPercentageRange;
 
-    // Layouts
-    @BindView(R.id.inputBox)
-    LinearLayout inputBox;
-    @BindView(R.id.resultsBox)
-    LinearLayout resultsBox;
     @BindView(R.id.expandedResultsBox)
     LinearLayout expandedResultsBox;
-    @BindView(R.id.allPossibilitiesBox)
-    LinearLayout allPossibilitiesBox;
 
 
     @BindView(R.id.appraisalBox)
@@ -448,17 +445,17 @@ public class Pokefly extends Service {
     private boolean infoLayoutArcPointerVisible = false;
 
     private void showInfoLayoutArcPointer() {
-        if (!infoLayoutArcPointerVisible && arcPointer != null && infoLayout != null) {
+        if (!infoLayoutArcPointerVisible && arcPointer != null && inputsLayout != null) {
             infoLayoutArcPointerVisible = true;
             windowManager.addView(arcPointer, arcParams);
-            windowManager.addView(infoLayout, layoutParams);
+            windowManager.addView(inputsLayout, layoutParams);
         }
     }
 
     private void hideInfoLayoutArcPointer() {
         if (infoLayoutArcPointerVisible) {
             windowManager.removeView(arcPointer);
-            windowManager.removeView(infoLayout);
+            windowManager.removeView(inputsLayout);
             infoLayoutArcPointerVisible = false;
         }
     }
@@ -618,14 +615,33 @@ public class Pokefly extends Service {
      */
     private void createInfoLayout() {
 
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        infoLayout = (LinearLayout) inflater.inflate(R.layout.dialog_info_window, null);
-        layoutParams.gravity = Gravity.CENTER | Gravity.BOTTOM;
-        ButterKnife.bind(this, infoLayout);
+        inflateInputsLayout();
+        inflateAllPossibilitiesLayout();
+        inflateResultsLayout();
 
         createInputLayout();
         createResultLayout();
         createAllIvLayout();
+    }
+
+    // All this is duplicated code for the purpose of testing
+    private void inflateInputsLayout(){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        inputsLayout = (LinearLayout) inflater.inflate(R.layout.dialog_info_window, null);
+
+        ButterKnife.bind(this, inputsLayout);
+    }
+    private void inflateResultsLayout(){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        resultsLayout = (LinearLayout) inflater.inflate(R.layout.dialog_results, null);
+
+        ButterKnife.bind(this, resultsLayout);
+    }
+    private void inflateAllPossibilitiesLayout(){
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        allPossibilitiesLayout = (LinearLayout) inflater.inflate(R.layout.dialog_all_possibilities, null);
+
+        ButterKnife.bind(this, allPossibilitiesLayout);
     }
 
     /**
@@ -822,13 +838,13 @@ public class Pokefly extends Service {
      * @param moveUp true if move up, false if move down
      */
     private void moveOverlay(Boolean moveUp) {
-        WindowManager.LayoutParams newParams = (WindowManager.LayoutParams) infoLayout.getLayoutParams();
+        WindowManager.LayoutParams newParams = (WindowManager.LayoutParams) inputsLayout.getLayoutParams();
         if (moveUp) {
             newParams.gravity = Gravity.TOP;
         } else {
             newParams.gravity = Gravity.BOTTOM;
         }
-        windowManager.updateViewLayout(infoLayout, newParams);
+        windowManager.updateViewLayout(inputsLayout, newParams);
     }
 
     /**
@@ -838,12 +854,12 @@ public class Pokefly extends Service {
         if (windowManager == null) {
             return; //do nothing if window is not initiated
         }
-        if (infoLayout.getLayoutParams() == null) {
+        if (inputsLayout.getLayoutParams() == null) {
             return;
         }
 
-        //move up if on input screen & appraisal box is open, else move down
-        moveOverlay(inputBox.getVisibility() == View.VISIBLE && appraisalBox.getVisibility() == View.VISIBLE);
+        //move up if appraisal box is open, else move down
+        moveOverlay(appraisalBox.getVisibility() == View.VISIBLE);
     }
 
     private void adjustArcPointerBar(double estimatedPokemonLevel) {
@@ -941,8 +957,8 @@ public class Pokefly extends Service {
      * Makes the input components invisible, and makes the result components visible.
      */
     private void transitionOverlayViewFromInputToResults() {
-        resultsBox.setVisibility(View.VISIBLE);
-        inputBox.setVisibility(View.GONE);
+        windowManager.removeView(inputsLayout);
+        windowManager.addView(resultsLayout, layoutParams);
 
         initialButtonsLayout.setVisibility(View.GONE);
         onCheckButtonsLayout.setVisibility(View.VISIBLE);
@@ -1327,8 +1343,8 @@ public class Pokefly extends Service {
      */
     @OnClick(R.id.tvSeeAllPossibilities)
     public void displayAllPossibilities() {
-        resultsBox.setVisibility(View.GONE);
-        allPossibilitiesBox.setVisibility(View.VISIBLE);
+        windowManager.removeView(resultsLayout);
+        windowManager.addView(allPossibilitiesLayout, layoutParams);
     }
 
     @OnClick(R.id.exResCompare)
@@ -1352,10 +1368,7 @@ public class Pokefly extends Service {
      * Resets the floating window that contains the result and input dialogue.
      */
     private void resetInfoDialogue() {
-        inputBox.setVisibility(View.VISIBLE);
         extendedEvolutionSpinner.setSelection(-1);
-        resultsBox.setVisibility(View.GONE);
-        allPossibilitiesBox.setVisibility(View.GONE);
     }
 
     /**
@@ -1372,13 +1385,12 @@ public class Pokefly extends Service {
     //TODO: Needs better implementation
     @OnClick(R.id.btnBackInfo)
     public void backToIvForm() {
-        if (allPossibilitiesBox.getVisibility() == View.VISIBLE) {
-            allPossibilitiesBox.setVisibility(View.GONE);
-            resultsBox.setVisibility(View.VISIBLE);
+        if (allPossibilitiesLayout.getVisibility()==View.VISIBLE) {
+            windowManager.removeView(allPossibilitiesLayout);
+            windowManager.addView(resultsLayout, layoutParams);
         } else {
-            allPossibilitiesBox.setVisibility(View.GONE);
-            inputBox.setVisibility(View.VISIBLE);
-            resultsBox.setVisibility(View.GONE);
+            windowManager.removeView(resultsLayout);
+            windowManager.addView(inputsLayout, layoutParams);
 
             initialButtonsLayout.setVisibility(View.VISIBLE);
             onCheckButtonsLayout.setVisibility(View.GONE);
