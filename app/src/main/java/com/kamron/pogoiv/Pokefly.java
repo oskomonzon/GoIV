@@ -716,7 +716,7 @@ public class Pokefly extends Service {
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        if(appraisalBox.getVisibility()==View.VISIBLE){
+                        if(newParams.gravity==Gravity.TOP){
                             newParams.y = (int) (y + (event.getRawY() - startingY));
                         }else {
                             newParams.y = (int) (y - (event.getRawY() - startingY));
