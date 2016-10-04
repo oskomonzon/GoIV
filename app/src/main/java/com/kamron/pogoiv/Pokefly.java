@@ -31,6 +31,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -271,6 +272,8 @@ public class Pokefly extends Service {
     @BindView(R.id.staCheckbox)
     CheckBox staCheckbox;
 
+    @BindView(R.id.positionHandler)
+    ImageView positionHandler;
 
     private String pokemonName;
     private String candyName;
@@ -695,6 +698,37 @@ public class Pokefly extends Service {
         createInputLayout();
         createResultLayout();
         createAllIvLayout();
+
+        initPositionHandler();
+    }
+
+    private void initPositionHandler() {
+        positionHandler.setOnTouchListener(new View.OnTouchListener() {
+            WindowManager.LayoutParams newParams = layoutParams;
+            double y, startingY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        y = newParams.y;
+                        startingY = event.getRawY();
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+                        if(appraisalBox.getVisibility()==View.VISIBLE){
+                            newParams.y = (int) (y + (event.getRawY() - startingY));
+                        }else {
+                            newParams.y = (int) (y - (event.getRawY() - startingY));
+                        }
+                        windowManager.updateViewLayout(infoLayout, newParams);
+
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     /**
