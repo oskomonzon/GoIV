@@ -748,20 +748,6 @@ public class Pokefly extends Service {
     }
 
     /**
-     * Loads from shared preferences the Info Window position required for appraisal mode.
-     * @return Loaded value or fallback to 0
-     */
-    private void setWindowPosition(){
-        WindowManager.LayoutParams newParams = layoutParams;
-        if(newParams.gravity==Gravity.TOP){
-            newParams.y = sharedPref.getInt("appraisalWindowPosition",0);
-        }else{
-            newParams.y = 0;
-        }
-        windowManager.updateViewLayout(infoLayout, newParams);
-    }
-
-    /**
      * Creates and initializes the components in the "screen" in he floating dialog that shows all possible iv
      * combinations.
      */
@@ -959,7 +945,6 @@ public class Pokefly extends Service {
         toggleVisibility(inputAppraisalExpandBox, appraisalBox, true);
         positionHandler.setVisibility(appraisalBox.getVisibility());
         moveOverlayUpOrDownToMatchAppraisalBox();
-        setWindowPosition();
     }
 
     /**
@@ -971,8 +956,10 @@ public class Pokefly extends Service {
         WindowManager.LayoutParams newParams = (WindowManager.LayoutParams) infoLayout.getLayoutParams();
         if (moveUp) {
             newParams.gravity = Gravity.TOP;
+            newParams.y = sharedPref.getInt("appraisalWindowPosition",0);
         } else {
             newParams.gravity = Gravity.BOTTOM;
+            newParams.y = 0;
         }
         windowManager.updateViewLayout(infoLayout, newParams);
     }
