@@ -1689,6 +1689,7 @@ public class Pokefly extends Service {
 
             showInfoLayoutArcPointer();
             setVisibility(inputAppraisalExpandBox, appraisalBox, false, false);
+            positionHandler.setVisibility(appraisalBox.getVisibility());
             moveOverlayUpOrDownToMatchAppraisalBox(); //move the overlay to correct position regarding appraisal box
             adjustArcPointerBar(estimatedPokemonLevel);
 
