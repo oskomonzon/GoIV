@@ -16,6 +16,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:src="@drawable/position_handler"
+            android:visibility="gone"
             />
 
         <TextView

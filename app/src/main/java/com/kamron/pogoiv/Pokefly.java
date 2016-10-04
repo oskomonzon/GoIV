@@ -76,6 +76,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.apptik.widget.MultiSlider;
 
+import static android.R.attr.y;
+
 /**
  * Currently, the central service in Pokemon Go, dealing with everything except
  * the initial activity.
@@ -702,6 +704,10 @@ public class Pokefly extends Service {
         initPositionHandler();
     }
 
+    /**
+     * Creates an OnTouchListener for positionHandler and evaluates its events in order to determine
+     * the actions required to move the window and save its new location.
+     */
     private void initPositionHandler() {
         positionHandler.setOnTouchListener(new View.OnTouchListener() {
             WindowManager.LayoutParams newParams = layoutParams;
@@ -716,12 +722,12 @@ public class Pokefly extends Service {
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        if(newParams.gravity==Gravity.TOP){
-                            newParams.y = (int) (y + (event.getRawY() - startingY));
-                        }else {
-                            newParams.y = (int) (y - (event.getRawY() - startingY));
-                        }
+                        newParams.y = (int) (y + (event.getRawY() - startingY));
                         windowManager.updateViewLayout(infoLayout, newParams);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        saveWindowPosition(newParams.y);
 
                     default:
                         break;
@@ -729,6 +735,30 @@ public class Pokefly extends Service {
                 return true;
             }
         });
+    }
+
+    /**
+     * Saves the current Info Window location to shared preferences.
+     * @param appraisalWindowPosition Current Info Window Y offset for appraisal mode.
+     */
+    private void saveWindowPosition(int appraisalWindowPosition) {
+        SharedPreferences.Editor edit = sharedPref.edit();
+        edit.putInt("appraisalWindowPosition", appraisalWindowPosition);
+        edit.apply();
+    }
+
+    /**
+     * Loads from shared preferences the Info Window position required for appraisal mode.
+     * @return Loaded value or fallback to 0
+     */
+    private void setWindowPosition(){
+        WindowManager.LayoutParams newParams = layoutParams;
+        if(newParams.gravity==Gravity.TOP){
+            newParams.y = sharedPref.getInt("appraisalWindowPosition",0);
+        }else{
+            newParams.y = 0;
+        }
+        windowManager.updateViewLayout(infoLayout, newParams);
     }
 
     /**
@@ -927,7 +957,9 @@ public class Pokefly extends Service {
      */
     public void toggleAppraisalBox() {
         toggleVisibility(inputAppraisalExpandBox, appraisalBox, true);
+        positionHandler.setVisibility(appraisalBox.getVisibility());
         moveOverlayUpOrDownToMatchAppraisalBox();
+        setWindowPosition();
     }
 
     /**
