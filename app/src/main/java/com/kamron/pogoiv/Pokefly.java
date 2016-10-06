@@ -76,7 +76,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.apptik.widget.MultiSlider;
 
-import static android.R.attr.y;
+import static com.kamron.pogoiv.GoIVSettings.APPRAISAL_WINDOW_POSITION;
 
 /**
  * Currently, the central service in Pokemon Go, dealing with everything except
@@ -743,7 +743,7 @@ public class Pokefly extends Service {
      */
     private void saveWindowPosition(int appraisalWindowPosition) {
         SharedPreferences.Editor edit = sharedPref.edit();
-        edit.putInt("appraisalWindowPosition", appraisalWindowPosition);
+        edit.putInt(APPRAISAL_WINDOW_POSITION, appraisalWindowPosition);
         edit.apply();
     }
 
@@ -956,7 +956,7 @@ public class Pokefly extends Service {
         WindowManager.LayoutParams newParams = (WindowManager.LayoutParams) infoLayout.getLayoutParams();
         if (moveUp) {
             newParams.gravity = Gravity.TOP;
-            newParams.y = sharedPref.getInt("appraisalWindowPosition",0);
+            newParams.y = sharedPref.getInt(APPRAISAL_WINDOW_POSITION,0);
         } else {
             newParams.gravity = Gravity.BOTTOM;
             newParams.y = 0;
